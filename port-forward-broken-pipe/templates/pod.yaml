@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-files
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  512KiB.base64: |
+    {{- tpl (.Files.Get "files/512KiB.base64") . | nindent 4 }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  containers:
+    - name: {{ .Chart.Name }}
+      image: "nginx:1.16.0"
+      ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+      volumeMounts:
+        - name: example-files
+          mountPath: /usr/share/nginx/html/files
+  volumes:
+    - name: example-files
+      configMap:
+        name: example-files
