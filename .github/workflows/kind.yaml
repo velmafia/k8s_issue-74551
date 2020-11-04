@@ -14,3 +14,12 @@ jobs:
         echo "current-context:" $(kubectl config current-context)
         echo "environment-kubeconfig:" ${KUBECONFIG}
         ./start.sh
+    - name: Collect artifacts
+      if: always()
+      run: |
+        kind export logs artifacts
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: artifacts
+        path: artifacts
